@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>1xBet Official Telegram Mini App</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="tma-app">
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-logo" id="brandLogo">
+          <span class="logo-1x">1x</span><span class="logo-bet">BET</span>
+        </div>
+        <div class="vip-badge" id="vipBadge">
+          <span class="vip-icon">★</span>
+          <span class="vip-text">VIP PRO</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="wallet-chip" id="walletChip">
+          <div class="wallet-balance">
+            <span class="currency-symbol">$</span>
+            <span class="balance-value" id="userBalanceDisplay">1,250.00</span>
+          </div>
+          <button class="btn-deposit-quick" id="btnDepositQuick" title="Deposit Funds" onclick="openDepositModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="user-avatar-btn" id="userProfileBtn" onclick="switchTab('wallet')">
+          <div class="avatar-circle" id="userAvatar">
+            <span id="userAvatarText">1X</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- LIVE MARQUEE / TICKER -->
+    <div class="live-ticker-bar">
+      <div class="ticker-tag">
+        <span class="pulsing-dot"></span> LIVE
+      </div>
+      <div class="ticker-content" id="tickerText">
+        <span>⚽ Real Madrid 2 - 1 Man City (74')</span>
+        <span>•</span>
+        <span>🔥 Aviator crashed at 14.82x</span>
+        <span>•</span>
+        <span>🎾 Djokovic vs Alcaraz: Set 3 Tiebreak</span>
+        <span>•</span>
+        <span>💰 @alex_win won $4,200 on 5-fold Express!</span>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE VIEW -->
+    <main class="app-body" id="mainContainer">
+
+      <!-- HERO PROMOTIONAL CAROUSEL -->
+      <section class="hero-carousel-section">
+        <div class="carousel-track" id="heroTrack">
+          <!-- Slide 1: Sports Banner -->
+          <div class="carousel-slide active" style="background-image: linear-gradient(180deg, rgba(10,23,40,0.1) 0%, rgba(10,23,40,0.95) 100%), url('images/sports_banner.jpg');">
+            <div class="slide-content">
+              <span class="slide-tag">UEFA CHAMPIONS LEAGUE</span>
+              <h2 class="slide-title">200% FIRST DEPOSIT BONUS</h2>
+              <p class="slide-desc">Risk-free bet up to $500 on all top matches</p>
+              <div class="slide-actions">
+                <button class="btn-cta-gold" onclick="switchTab('sports')">Bet Now</button>
+                <button class="btn-cta-glass" onclick="openDepositModal()">Deposit</button>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 2: Aviator Crash Banner -->
+          <div class="carousel-slide" style="background-image: linear-gradient(180deg, rgba(10,23,40,0.1) 0%, rgba(10,23,40,0.95) 100%), url('images/casino_banner.jpg');">
+            <div class="slide-content">
+              <span class="slide-tag crash-tag">🚀 1xGAMES EXCLUSIVE</span>
+              <h2 class="slide-title">1xCRASH AVIATOR</h2>
+              <p class="slide-desc">Cash out before the plane flies away! Win up to x10,000</p>
+              <div class="slide-actions">
+                <button class="btn-cta-cyan" onclick="switchTab('crash')">Play Crash</button>
+                <button class="btn-cta-glass" onclick="switchTab('casino')">All Games</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Carousel Dots -->
+        <div class="carousel-dots">
+          <span class="dot active" onclick="setSlide(0)"></span>
+          <span class="dot" onclick="setSlide(1)"></span>
+        </div>
+      </section>
+
+      <!-- NAVIGATION TABS -->
+      <nav class="category-tabs" id="categoryNav">
+        <button class="cat-tab active" data-tab="sports" onclick="switchTab('sports')">
+          <span class="cat-icon">⚽</span>
+          <span class="cat-label">Sports</span>
+        </button>
+        <button class="cat-tab" data-tab="live" onclick="switchTab('live')">
+          <span class="cat-icon live-badge-icon">🔴</span>
+          <span class="cat-label">Live In-Play</span>
+          <span class="cat-pill">18</span>
+        </button>
+        <button class="cat-tab" data-tab="crash" onclick="switchTab('crash')">
+          <span class="cat-icon">🚀</span>
+          <span class="cat-label">1xCrash</span>
+          <span class="cat-pill hot-pill">HOT</span>
+        </button>
+        <button class="cat-tab" data-tab="casino" onclick="switchTab('casino')">
+          <span class="cat-icon">🎰</span>
+          <span class="cat-label">Casino</span>
+        </button>
+        <button class="cat-tab" data-tab="history" onclick="switchTab('history')">
+          <span class="cat-icon">📋</span>
+          <span class="cat-label">My Bets</span>
+        </button>
+        <button class="cat-tab" data-tab="wallet" onclick="switchTab('wallet')">
+          <span class="cat-icon">💳</span>
+          <span class="cat-label">Cashier</span>
+        </button>
+      </nav>
+
+      <!-- TAB 1: SPORTS & LIVE BETTING -->
+      <section class="tab-content active" id="tabSports">
+        <!-- Sports Filter Row -->
+        <div class="sub-filter-row">
+          <button class="filter-chip active" data-sport="all" onclick="filterSport('all')">🔥 All Sports</button>
+          <button class="filter-chip" data-sport="football" onclick="filterSport('football')">⚽ Football</button>
+          <button class="filter-chip" data-sport="basketball" onclick="filterSport('basketball')">🏀 Basketball</button>
+          <button class="filter-chip" data-sport="tennis" onclick="filterSport('tennis')">🎾 Tennis</button>
+          <button class="filter-chip" data-sport="esports" onclick="filterSport('esports')">🎮 Esports</button>
+          <button class="filter-chip" data-sport="mma" onclick="filterSport('mma')">🥊 UFC / MMA</button>
+        </div>
+
+        <!-- Express Accumulator Booster Promo -->
+        <div class="express-booster-card">
+          <div class="booster-left">
+            <span class="booster-badge">⚡ ACCUMULATOR OF THE DAY</span>
+            <div class="booster-title">+10% Odds Boost on Combo Bets!</div>
+            <div class="booster-sub">Select 3 or more matches to activate the 1xBet Express Boost.</div>
+          </div>
+          <button class="btn-boost-action" onclick="loadExpressOfDay()">Add Express</button>
+        </div>
+
+        <!-- Matches List -->
+        <div class="section-heading">
+          <h3 class="heading-title" id="matchesHeading">🔴 Top Live & Upcoming Matches</h3>
+          <span class="heading-extra" id="matchCountBadge">8 Events</span>
+        </div>
+
+        <div class="matches-grid" id="matchesContainer">
+          <!-- Dynamically Rendered by app.js -->
+        </div>
+      </section>
+
+      <!-- TAB 2: LIVE IN-PLAY -->
+      <section class="tab-content" id="tabLive">
+        <div class="live-header-banner">
+          <div class="live-pulse-container">
+            <span class="pulse-ring"></span>
+            <span class="pulse-core"></span>
+          </div>
+          <div>
+            <div class="live-banner-title">Real-Time In-Play Arena</div>
+            <div class="live-banner-sub">Dynamic odds updated second-by-second with live match tracker</div>
+          </div>
+        </div>
+        <div class="matches-grid" id="liveMatchesContainer">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 3: 1xCRASH (AVIATOR GAME) -->
+      <section class="tab-content" id="tabCrash">
+        <div class="crash-game-container">
+          <!-- Crash Header & Multiplier History -->
+          <div class="crash-history-bar" id="crashHistoryBar">
+            <span class="history-label">Previous:</span>
+            <div class="history-pills" id="historyPills">
+              <span class="pill blue">1.35x</span>
+              <span class="pill purple">2.84x</span>
+              <span class="pill gold">11.40x</span>
+              <span class="pill blue">1.12x</span>
+              <span class="pill purple">4.65x</span>
+              <span class="pill blue">1.80x</span>
+            </div>
+          </div>
+
+          <!-- Interactive Aviator Canvas Arena -->
+          <div class="crash-canvas-card">
+            <canvas id="crashCanvas" width="400" height="230"></canvas>
+            <div class="crash-display-overlay">
+              <div class="multiplier-display" id="crashMultiplier">1.00x</div>
+              <div class="crash-status-text" id="crashStatus">WAITING FOR NEXT ROUND...</div>
+              <div class="crash-payout-preview" id="crashPayoutPreview"></div>
+            </div>
+          </div>
+
+          <!-- Crash Betting Controls Panel -->
+          <div class="crash-controls-card">
+            <div class="bet-input-group">
+              <label class="input-label">STAKE AMOUNT ($)</label>
+              <div class="input-box-row">
+                <button class="btn-step" onclick="adjustCrashStake(-5)">-5</button>
+                <input type="number" id="crashStakeInput" class="stake-input" value="10" min="1" max="1000">
+                <button class="btn-step" onclick="adjustCrashStake(5)">+5</button>
+              </div>
+              <div class="quick-chip-row">
+                <button class="quick-chip" onclick="setCrashStake(5)">$5</button>
+                <button class="quick-chip" onclick="setCrashStake(10)">$10</button>
+                <button class="quick-chip" onclick="setCrashStake(25)">$25</button>
+                <button class="quick-chip" onclick="setCrashStake(50)">$50</button>
+                <button class="quick-chip" onclick="setCrashStake(100)">$100</button>
+                <button class="quick-chip max-chip" onclick="setCrashStake('max')">MAX</button>
+              </div>
+            </div>
+
+            <!-- Auto Cashout Setting -->
+            <div class="auto-cashout-row">
+              <label class="switch-container">
+                <input type="checkbox" id="autoCashoutToggle">
+                <span class="slider"></span>
+              </label>
+              <span class="auto-text">Auto Cashout at</span>
+              <input type="number" id="autoCashoutVal" class="auto-input" value="2.00" step="0.1" min="1.1">
+              <span class="auto-suffix">x</span>
+            </div>
+
+            <!-- Main Action Button (Bet / Cashout) -->
+            <button class="btn-crash-main" id="btnCrashAction" onclick="handleCrashAction()">
+              <span class="btn-crash-title" id="crashBtnTitle">PLACE BET $10.00</span>
+              <span class="btn-crash-sub" id="crashBtnSub">Next round in 3s</span>
+            </button>
+          </div>
+
+          <!-- Live Players in Current Flight -->
+          <div class="crash-players-list">
+            <div class="players-header">
+              <span>✈️ Active Players in Flight</span>
+              <span id="activeFlyersCount">38 Players</span>
+            </div>
+            <div class="players-scroll" id="playersScroll">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: 1xCASINO & SLOTS -->
+      <section class="tab-content" id="tabCasino">
+        <div class="casino-hero">
+          <div class="casino-hero-title">🎰 1xSLOTS & CASINO</div>
+          <p class="casino-hero-desc">Spin to hit the 777 Mega Jackpot and instant multipliers!</p>
+        </div>
+
+        <!-- 3-Reel Slot Machine -->
+        <div class="slot-machine-card">
+          <div class="jackpot-banner">
+            <span class="jackpot-label">🏆 MEGA JACKPOT</span>
+            <span class="jackpot-val" id="jackpotValue">$88,420.50</span>
+          </div>
+
+          <div class="slot-reels-container">
+            <div class="slot-reel" id="reel1"><span>7️⃣</span></div>
+            <div class="slot-reel" id="reel2"><span>7️⃣</span></div>
+            <div class="slot-reel" id="reel3"><span>7️⃣</span></div>
+          </div>
+
+          <div class="slot-win-notice" id="slotWinNotice">Match 3 to win up to 50x your bet!</div>
+
+          <div class="slot-controls">
+            <div class="bet-spin-row">
+              <span class="spin-bet-label">Spin Bet:</span>
+              <div class="spin-chips">
+                <button class="chip-sm active" onclick="setSlotBet(5)">$5</button>
+                <button class="chip-sm" onclick="setSlotBet(10)">$10</button>
+                <button class="chip-sm" onclick="setSlotBet(25)">$25</button>
+                <button class="chip-sm" onclick="setSlotBet(50)">$50</button>
+              </div>
+            </div>
+            <button class="btn-spin-action" id="btnSpin" onclick="spinSlot()">
+              <span class="spin-icon">🎰</span>
+              <span>SPIN ($<span id="currentSlotBetDisplay">5</span>)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Popular Casino Games Grid -->
+        <div class="section-heading">
+          <h3 class="heading-title">🔥 1xGames Collection</h3>
+        </div>
+        <div class="games-grid">
+          <div class="game-card" onclick="switchTab('crash')">
+            <div class="game-badge">HOT</div>
+            <div class="game-icon-box">🚀</div>
+            <div class="game-info">
+              <div class="game-name">Aviator Crash</div>
+              <div class="game-cat">Multiplier 97% RTP</div>
+            </div>
+          </div>
+          <div class="game-card" onclick="alertNotification('Roulette Live', 'Roulette table joining...')">
+            <div class="game-icon-box">🎡</div>
+            <div class="game-info">
+              <div class="game-name">European Roulette</div>
+              <div class="game-cat">Live Dealer</div>
+            </div>
+          </div>
+          <div class="game-card" onclick="alertNotification('Apple of Fortune', 'Game loading...')">
+            <div class="game-badge green">NEW</div>
+            <div class="game-icon-box">🍏</div>
+            <div class="game-info">
+              <div class="game-name">Apple of Fortune</div>
+              <div class="game-cat">1xBet Classic</div>
+            </div>
+          </div>
+          <div class="game-card" onclick="alertNotification('Dice 777', 'Dice roll opening...')">
+            <div class="game-icon-box">🎲</div>
+            <div class="game-info">
+              <div class="game-name">Under & Over 7</div>
+              <div class="game-cat">Instant Win</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: MY BETS & BET HISTORY -->
+      <section class="tab-content" id="tabHistory">
+        <div class="history-filter-pills">
+          <button class="hist-pill active" onclick="filterBetsHistory('all')">All Bets (<span id="totalBetsCount">0</span>)</button>
+          <button class="hist-pill" onclick="filterBetsHistory('open')">Active (<span id="openBetsCount">0</span>)</button>
+          <button class="hist-pill" onclick="filterBetsHistory('won')">Won (<span id="wonBetsCount">0</span>)</button>
+          <button class="hist-pill" onclick="filterBetsHistory('lost')">Lost</button>
+        </div>
+        <div class="bets-history-list" id="betsHistoryList">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- TAB 6: CASHIER / WALLET -->
+      <section class="tab-content" id="tabWallet">
+        <div class="wallet-overview-card">
+          <div class="overview-top">
+            <span class="overview-label">TOTAL AVAILABLE BALANCE</span>
+            <span class="overview-badge">VERIFIED</span>
+          </div>
+          <div class="overview-amount">
+            <span class="overview-curr">$</span>
+            <span class="overview-num" id="cashierBalanceDisplay">1,250.00</span>
+          </div>
+          <div class="overview-actions">
+            <button class="btn-cashier-deposit" onclick="openDepositModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              <span>Deposit</span>
+            </button>
+            <button class="btn-cashier-withdraw" onclick="openWithdrawModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 19l7-7-7-7"/></svg>
+              <span>Withdraw</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Methods Grid -->
+        <div class="section-heading">
+          <h3 class="heading-title">💳 Fast Payment Options</h3>
+        </div>
+        <div class="payment-methods-grid">
+          <div class="payment-card" onclick="selectDepositMethod('paylink')">
+            <div class="method-badge">INSTANT</div>
+            <div class="method-icon">🏦</div>
+            <div class="method-name">PayLink Bank</div>
+            <div class="method-fee">0% Commission</div>
+          </div>
+          <div class="payment-card" onclick="selectDepositMethod('bank')">
+            <div class="method-icon">🏛️</div>
+            <div class="method-name">Bank Transfer</div>
+            <div class="method-fee">Direct Deposit</div>
+          </div>
+          <div class="payment-card" onclick="selectDepositMethod('telebirr')">
+            <div class="method-badge green">POPULAR</div>
+            <div class="method-icon">📱</div>
+            <div class="method-name">Telebirr / Mobile</div>
+            <div class="method-fee">Instant QR / Number</div>
+          </div>
+          <div class="payment-card" onclick="selectDepositMethod('crypto')">
+            <div class="method-icon">🪙</div>
+            <div class="method-name">USDT / TON / BTC</div>
+            <div class="method-fee">Automated Crypto</div>
+          </div>
+        </div>
+
+        <!-- Transactions History -->
+        <div class="section-heading">
+          <h3 class="heading-title">Recent Transactions</h3>
+        </div>
+        <div class="transactions-list" id="transactionsList">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FLOATING BETSLIP BAR (Appears when odds selected) -->
+    <div class="floating-betslip-bar" id="floatingSlipBar" onclick="toggleBetslipModal(true)">
+      <div class="slip-bar-left">
+        <div class="slip-badge" id="slipBadgeCount">0</div>
+        <div class="slip-summary-text">
+          <div class="slip-bar-title">BETSLIP</div>
+          <div class="slip-bar-odds" id="slipBarOdds">Total Odds: 1.00</div>
+        </div>
+      </div>
+      <div class="slip-bar-right">
+        <button class="btn-view-slip">
+          <span>View Slip</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- BOTTOM APP NAVIGATION BAR (Always accessible) -->
+    <footer class="app-bottom-nav">
+      <button class="nav-item active" data-tab="sports" onclick="switchTab('sports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span>Sports</span>
+      </button>
+      <button class="nav-item" data-tab="live" onclick="switchTab('live')">
+        <div class="live-dot-nav"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Live</span>
+      </button>
+      <button class="nav-item highlight-nav" data-tab="crash" onclick="switchTab('crash')">
+        <div class="nav-hot-icon">🚀</div>
+        <span>Crash</span>
+      </button>
+      <button class="nav-item" data-tab="casino" onclick="switchTab('casino')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h.01M12 15h.01M17 15h.01M7 9h10"/></svg>
+        <span>Casino</span>
+      </button>
+      <button class="nav-item" data-tab="history" onclick="switchTab('history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>My Bets</span>
+      </button>
+      <button class="nav-item" data-tab="wallet" onclick="switchTab('wallet')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Cashier</span>
+      </button>
+    </footer>
+
+    <!-- BETSLIP DRAWER / MODAL -->
+    <div class="modal-overlay" id="betslipModal">
+      <div class="betslip-drawer">
+        <div class="drawer-handle" onclick="toggleBetslipModal(false)"></div>
+        <div class="drawer-header">
+          <div class="drawer-title-group">
+            <span class="drawer-title">BETSLIP</span>
+            <span class="slip-type-badge" id="slipTypeLabel">SINGLE</span>
+          </div>
+          <div class="drawer-header-actions">
+            <button class="btn-clear-slip" onclick="clearBetslip()">Clear All</button>
+            <button class="btn-close-drawer" onclick="toggleBetslipModal(false)">✕</button>
+          </div>
+        </div>
+
+        <!-- Betslip Type Toggle (Single / Accumulator) -->
+        <div class="slip-tabs">
+          <button class="slip-tab active" id="tabTypeSingle" onclick="setSlipType('single')">Single Bets</button>
+          <button class="slip-tab" id="tabTypeExpress" onclick="setSlipType('accumulator')">
+            <span>Express Combo</span>
+            <span class="express-badge">+10% Boost</span>
+          </button>
+        </div>
+
+        <!-- Selections Scroll List -->
+        <div class="slip-selections-list" id="slipSelectionsList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Stake & Payout Calculation -->
+        <div class="slip-footer-panel">
+          <div class="slip-calculation-box">
+            <div class="calc-row">
+              <span class="calc-label">Total Odds:</span>
+              <span class="calc-val odds-val" id="calcTotalOdds">1.00</span>
+            </div>
+            <div class="calc-row" id="expressBonusRow" style="display:none;">
+              <span class="calc-label gold-text">⚡ 1xExpress +10% Bonus:</span>
+              <span class="calc-val gold-text" id="calcExpressBonus">+$0.00</span>
+            </div>
+            <div class="calc-row">
+              <span class="calc-label">Potential Return:</span>
+              <span class="calc-val win-val" id="calcPotentialWin">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Stake Input -->
+          <div class="slip-stake-section">
+            <div class="stake-label-row">
+              <span>Bet Amount</span>
+              <span class="stake-avail">Balance: $<span id="slipBalanceAvail">1,250.00</span></span>
+            </div>
+            <div class="stake-field-row">
+              <span class="field-curr">$</span>
+              <input type="number" id="betSlipStakeInput" class="slip-stake-input" value="10" min="1" oninput="updateBetslipCalculations()">
+              <button class="btn-quick-add" onclick="addStake(10)">+10</button>
+              <button class="btn-quick-add" onclick="addStake(50)">+50</button>
+              <button class="btn-quick-add" onclick="setStakeMax()">MAX</button>
+            </div>
+          </div>
+
+          <!-- Place Bet Button -->
+          <button class="btn-place-bet" id="btnPlaceBet" onclick="submitBetSlip()">
+            <span class="place-bet-txt" id="placeBetText">PLACE BET ($10.00)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPOSIT MODAL -->
+    <div class="modal-overlay" id="depositModal">
+      <div class="deposit-dialog">
+        <div class="dialog-header">
+          <div class="dialog-title">Deposit to 1xBet Account</div>
+          <button class="btn-close-modal" onclick="closeDepositModal()">✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="deposit-methods-pills">
+            <button class="dep-pill active" onclick="setDepositTab('paylink')">PayLink Bank</button>
+            <button class="dep-pill" onclick="setDepositTab('bank')">Local Bank</button>
+            <button class="dep-pill" onclick="setDepositTab('crypto')">USDT / Crypto</button>
+          </div>
+
+          <!-- Method 1: PayLink Bank -->
+          <div class="deposit-tab-pane active" id="depPanePayLink">
+            <div class="paylink-intro-box">
+              <div class="paylink-badge">⚡ INSTANT GATEWAY</div>
+              <p>Deposit securely using PayLink Bank API. Funds are credited instantly.</p>
+            </div>
+            <div class="form-group">
+              <label>Amount to Deposit ($):</label>
+              <div class="amount-quick-buttons">
+                <button type="button" class="amt-btn" onclick="setDepositAmt(20)">$20</button>
+                <button type="button" class="amt-btn active" onclick="setDepositAmt(50)">$50</button>
+                <button type="button" class="amt-btn" onclick="setDepositAmt(100)">$100</button>
+                <button type="button" class="amt-btn" onclick="setDepositAmt(250)">$250</button>
+              </div>
+              <input type="number" id="depositAmountInput" class="dialog-input" value="50" min="5">
+            </div>
+            <div class="form-group">
+              <label>Bonus Promo Code (Optional):</label>
+              <input type="text" id="depositPromoCode" class="dialog-input" placeholder="Enter '1XVIP' for +100%">
+            </div>
+            <button class="btn-submit-deposit" onclick="executeDeposit('paylink')">
+              Proceed with PayLink Bank
+            </button>
+          </div>
+
+          <!-- Method 2: Local Bank Transfer -->
+          <div class="deposit-tab-pane" id="depPaneBank">
+            <div class="bank-details-card">
+              <div class="bank-row"><span>Bank Name:</span> <strong>Commercial / Awash Bank</strong></div>
+              <div class="bank-row"><span>Account Name:</span> <strong>1xBet Official Operations</strong></div>
+              <div class="bank-row"><span>Account Number:</span> <strong>1000 4829 1920 38</strong></div>
+              <div class="bank-row"><span>Reference Code:</span> <strong class="ref-code" id="depRefCode">1X-99482</strong></div>
+            </div>
+            <p class="bank-instructions">Transfer the exact amount and enter the reference number from your receipt.</p>
+            <div class="form-group">
+              <label>Transaction / Transfer Reference:</label>
+              <input type="text" id="bankRefInput" class="dialog-input" placeholder="e.g. TXN-89410928">
+            </div>
+            <button class="btn-submit-deposit" onclick="executeDeposit('bank')">Confirm Bank Transfer</button>
+          </div>
+
+          <!-- Method 3: Crypto -->
+          <div class="deposit-tab-pane" id="depPaneCrypto">
+            <div class="crypto-qr-box">
+              <div class="qr-placeholder">
+                <svg viewBox="0 0 24 24" width="80" height="80" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="7" y="7" width="1" height="1"/><rect x="18" y="7" width="1" height="1"/><rect x="7" y="18" width="1" height="1"/></svg>
+              </div>
+              <div class="crypto-addr-label">USDT (TRC20) Network:</div>
+              <div class="crypto-addr-text">TKw4hL8e5v9qZp3MNa7B2dC1xBetOfficial</div>
+            </div>
+            <button class="btn-submit-deposit" onclick="executeDeposit('crypto')">I Have Sent Crypto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WITHDRAW MODAL -->
+    <div class="modal-overlay" id="withdrawModal">
+      <div class="deposit-dialog">
+        <div class="dialog-header">
+          <div class="dialog-title">Withdraw Winnings</div>
+          <button class="btn-close-modal" onclick="closeWithdrawModal()">✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="form-group">
+            <label>Withdrawal Method:</label>
+            <select id="withdrawMethodSelect" class="dialog-select">
+              <option value="bank">Bank Transfer (Direct to Account)</option>
+              <option value="paylink">PayLink Payout</option>
+              <option value="telebirr">Telebirr / Mobile Money</option>
+              <option value="usdt">USDT TRC20 Wallet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount to Withdraw ($):</label>
+            <input type="number" id="withdrawAmountInput" class="dialog-input" placeholder="Min $10" value="50">
+          </div>
+          <div class="form-group">
+            <label>Account Number / Wallet Address:</label>
+            <input type="text" id="withdrawAccountInput" class="dialog-input" placeholder="Enter bank account or address">
+          </div>
+          <button class="btn-submit-withdraw" onclick="executeWithdrawal()">Submit Withdrawal Request</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS TOAST NOTIFICATION -->
+    <div class="toast-notification" id="appToast">
+      <div class="toast-icon" id="toastIcon">✓</div>
+      <div class="toast-message" id="toastMessage">Bet placed successfully!</div>
+    </div>
+
+  </div>
+
+  <!-- Main Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
